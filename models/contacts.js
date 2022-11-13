@@ -64,10 +64,7 @@ const addContact = async ({ name, email, phone }) => {
 
 const updateContact = async (contactId, body) => {
   try {
-    const contacts = await listContacts();
-    const [contactToUpdate] = contacts.filter(
-      (contact) => contact.id === contactId
-    );
+    const [contactToUpdate] = await removeContact(contactId);
     if (body.name) {
       contactToUpdate.name = body.name;
     }
@@ -77,6 +74,9 @@ const updateContact = async (contactId, body) => {
     if (body.phone) {
       contactToUpdate.phone = body.phone;
     }
+    const contacts = await listContacts();
+    const newContacts = [...contacts, contactToUpdate];
+    await fs.writeFile(contactsPath, JSON.stringify(newContacts));
     return contactToUpdate;
   } catch (error) {
     console.log(error);
