@@ -29,10 +29,16 @@ router.get("/:contactId", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
-  const body = req.body;
-  if (!body.name || !body.email || body.phone) {
+  const { name, email, phone } = req.body;
+
+  if (!name || !email || !phone) {
     return res.status(400).json({ message: "missing required name field" });
   }
+  const body = {
+    name,
+    email,
+    phone,
+  };
   const newContact = await contacts.addContact(body);
   res.status(201).json({
     status: "success",
