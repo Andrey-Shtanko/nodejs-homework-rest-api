@@ -1,5 +1,17 @@
 const express = require("express");
 const contacts = require("../../models/contacts.js");
+const Joi = require("joi");
+
+const contactCreateSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().required(),
+  phone: Joi.string().required(),
+});
+const contactUpdateSchema = Joi.object({
+  name: Joi.string(),
+  email: Joi.string(),
+  phone: Joi.string(),
+}).min(1);
 
 const router = express.Router();
 
@@ -29,9 +41,10 @@ router.get("/:contactId", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
+  const { error } = contactCreateSchema.validate(req.body);
   const { name, email, phone } = req.body;
 
-  if (!name || !email || !phone) {
+  if (error) {
     return res.status(400).json({ message: "missing required name field" });
   }
   const body = {
@@ -57,6 +70,7 @@ router.delete("/:contactId", async (req, res, next) => {
 });
 
 router.put("/:contactId", async (req, res, next) => {
+  const { error } = contactUpdateSchema.validate(req.body);
   const { contactId } = req.params;
   const { name, email, phone } = req.body;
   const body = {
@@ -64,7 +78,7 @@ router.put("/:contactId", async (req, res, next) => {
     email,
     phone,
   };
-  if (!body) {
+  if (error) {
     return res.status(400).json({ message: "missing fields" });
   }
   const updatedContact = await contacts.updateContact(contactId, body);
