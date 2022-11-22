@@ -1,11 +1,8 @@
-const fs = require("fs/promises");
-const path = require("path");
-const contactsPath = path.resolve("models/contacts.json");
+const { Contact } = require("../db/contactModel");
 
 const listContacts = async () => {
   try {
-    const response = await fs.readFile(contactsPath);
-    const contacts = JSON.parse(response);
+    const contacts = await Contact.find({});
     return contacts;
   } catch (error) {
     console.log(error);
@@ -14,8 +11,7 @@ const listContacts = async () => {
 
 const getContactById = async (contactId) => {
   try {
-    const contacts = await listContacts();
-    const findedContact = contacts.find((contact) => contact.id === contactId);
+    const findedContact = Contact.findById(contactId);
     if (!findedContact) {
       return null;
     }
@@ -27,17 +23,7 @@ const getContactById = async (contactId) => {
 
 const removeContact = async (contactId) => {
   try {
-    const contacts = await listContacts();
-    const deletedContactIndex = contacts.findIndex(
-      (contact) => contact.id === contactId
-    );
-
-    if (deletedContactIndex === -1) {
-      return null;
-    }
-    const deletedContact = contacts.splice(deletedContactIndex, 1);
-
-    await fs.writeFile(contactsPath, JSON.stringify(contacts));
+    const deletedContact = Contact.findByIdAndDelete(contactId);
     return deletedContact;
   } catch (error) {
     console.log(error);
@@ -46,16 +32,8 @@ const removeContact = async (contactId) => {
 
 const addContact = async ({ name, email, phone }) => {
   try {
-    const contacts = await listContacts();
-    const id = contacts.length + 1;
-    const newContact = {
-      id: `${id}`,
-      name,
-      email,
-      phone: `${phone}`,
-    };
-    const newContacts = [...contacts, newContact];
-    await fs.writeFile(contactsPath, JSON.stringify(newContacts));
+    const newContact = new Contact({ name, email, phone });
+    await newContact.save();
     return newContact;
   } catch (error) {
     console.log(error);
@@ -64,20 +42,25 @@ const addContact = async ({ name, email, phone }) => {
 
 const updateContact = async (contactId, body) => {
   try {
-    const [contactToUpdate] = await removeContact(contactId);
-    if (body.name) {
-      contactToUpdate.name = body.name;
-    }
-    if (body.email) {
-      contactToUpdate.email = body.email;
-    }
-    if (body.phone) {
-      contactToUpdate.phone = body.phone;
-    }
-    const contacts = await listContacts();
-    const newContacts = [...contacts, contactToUpdate];
-    await fs.writeFile(contactsPath, JSON.stringify(newContacts));
+    const contactToUpdate = await Contact.findByIdAndUpdate(contactId, body, {
+      new: true,
+    });
     return contactToUpdate;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updateStatusContact = async (contactId, favorite) => {
+  try {
+    const contactWithUpdatedStatus = await Contact.findByIdAndUpdate(
+      contactId,
+      { favorite },
+      {
+        new: true,
+      }
+    );
+    return contactWithUpdatedStatus;
   } catch (error) {
     console.log(error);
   }
@@ -89,4 +72,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateStatusContact,
 };
