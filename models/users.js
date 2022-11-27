@@ -10,7 +10,13 @@ const signup = async (email, password) => {
   }
 };
 
-const login = async () => {};
+const login = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  if (await bcrypt.compare(password, user.password)) {
+    throw new Error(`wrong error`);
+  }
+};
 
 module.exports = {
   signup,
