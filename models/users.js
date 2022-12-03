@@ -1,24 +1,29 @@
+const { Conflict} = require('http-errors')
 const { User } = require("../db/usersModel");
 const bcrypt = require("bcrypt");
 
 const signup = async (email, password) => {
+  const user = await User.findOne({ email });
+  if (user) { 
+    throw Conflict
+  }
   try {
-    const user = new User({ email, password: await bcrypt.hash(password, 10) });
-    await user.save();
+    const newUser = new User({ email, password: await bcrypt.hash(password, 10) });
+    await newUser.save();
   } catch (error) {
     console.log(error);
   }
 };
 
 const login = async (email, password) => {
-  const user = await User.findOne({ email });
+  
+};
+const logout = async () => {
 
-  if (await bcrypt.compare(password, user.password)) {
-    throw new Error(`wrong error`);
-  }
 };
 
 module.exports = {
   signup,
   login,
+  logout
 };

@@ -19,7 +19,8 @@ const usersSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-});
+}, { versionKey: false }
+);
 
 const User = mongoose.model("User", usersSchema);
 

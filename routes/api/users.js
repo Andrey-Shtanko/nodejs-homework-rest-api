@@ -1,9 +1,32 @@
 const express = require("express");
+const Joi = require("joi");
 const { signup } = require("../../models/users");
 const router = express.Router();
 
+const userSingupSchema = Joi.object({
+  email: Joi.string().required(),
+  password: Joi.string().required(),
+  subscription: Joi.string(),
+  token:Joi.string()
+});
+
+const userLoginSchema = Joi.object({
+  email: Joi.string().required(),
+  password: Joi.string().required()
+})
+
 router.post("/signup", async (req, res) => {
+  const { error} = userSingupSchema.validate(req.body)
   const { email, password } = req.body;
+  if (error) {
+    return res.status(400).json({
+      status: "Bad Request",
+      ResponseBody: {
+        message: "missing some input fields"
+      }
+    })
+  }
+  
   await signup(email, password);
   res.status(201).json({
     status: "Created",
@@ -15,6 +38,17 @@ router.post("/signup", async (req, res) => {
     },
   });
 });
-router.post("/login");
+router.post("/login", async (req, res) => { 
+  const { error } = userLoginSchema.validate(req.body)
+  if (error) {
+    return res.status(400).json({
+      status: "Bad Request",
+      ResponseBody: {
+        message: "missing some input fields"
+      }
+    })
+  }
+});
+router.post("/logout")
 
 module.exports = router;
