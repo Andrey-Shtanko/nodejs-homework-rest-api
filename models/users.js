@@ -17,8 +17,11 @@ const signup = async (email, password) => {
 
 const login = async (email, password) => {
   const user = await User.findOne({ email });
+  if (!user) {
+    throw createError(401, "Email or password is wrong", {status: "Unauthorized"})
+  }
   const match = await bcrypt.compare(password, user.password)
-  if (!user || !match) {
+  if (!match) {
     throw createError(401, "Email or password is wrong", {status: "Unauthorized"})
   }
   const payload = {
