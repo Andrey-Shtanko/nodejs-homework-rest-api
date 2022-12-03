@@ -2,6 +2,7 @@ const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
 
+
 const contactsRouter = require("./routes/api/contacts");
 const usersRouter = require("./routes/api/users");
 const app = express();
@@ -22,10 +23,14 @@ app.use((req, res) => {
 
 
 app.use((err, req, res, next) => {
-  if (err.status === "Conflict") {
+  if (err.status === 401) {
+    res.status(401).json({ message: err.message });
+  } else if (err.status === 409) {
     res.status(409).json({ message: err.message });
+  } else { 
+    res.status(500).json({ message: err.message });
   }
-  res.status(500).json({ message: err.message });
+  
 });
 
 module.exports = app;
