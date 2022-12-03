@@ -22,7 +22,7 @@ const login = async (email, password) => {
   }
   const match = await bcrypt.compare(password, user.password)
   if (!match) {
-    throw createError(401, "Email or password is wrong", {status: "Unauthorized"})
+    throw createError(401, "Email or password is wrong", {status: "Unauthorized"}) 
   }
   const payload = {
     id: user._id,
@@ -36,12 +36,18 @@ const login = async (email, password) => {
 
 
 };
+
 const logout = async () => {
 
 };
 
+const getCurrent = async () => { 
+
+}
+
 module.exports = {
   signup,
   login,
-  logout
+  logout,
+  getCurrent
 };
