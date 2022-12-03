@@ -54,14 +54,14 @@ router.post("/login", async (req, res, next) => {
     })
   }
   try {
-    await login(email, password)
+    const result =  await login(email, password)
     res.status(200).json({
       Status:  "OK",
       ResponseBody: {
-      token: "exampletoken",
+      token: result.token,
       user: {
       email: email,
-      subscription: "starter"
+      subscription: result.subscription
   }
 }
     })
