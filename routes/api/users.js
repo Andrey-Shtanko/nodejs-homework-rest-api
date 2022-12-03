@@ -1,6 +1,6 @@
 const express = require("express");
 const Joi = require("joi");
-const { signup } = require("../../models/users");
+const { signup, login } = require("../../models/users");
 const router = express.Router();
 
 const userSingupSchema = Joi.object({
@@ -15,7 +15,7 @@ const userLoginSchema = Joi.object({
   password: Joi.string().required()
 })
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", async (req, res, next) => {
   const { error} = userSingupSchema.validate(req.body)
   const { email, password } = req.body;
   if (error) {
@@ -26,9 +26,9 @@ router.post("/signup", async (req, res) => {
       }
     })
   }
-  
-  await signup(email, password);
-  res.status(201).json({
+  try {
+    await signup(email, password);
+    res.status(201).json({
     status: "Created",
     ResponseBody: {
       user: {
@@ -37,9 +37,14 @@ router.post("/signup", async (req, res) => {
       },
     },
   });
+  } catch (error) {
+    next(error)
+  }
+  
 });
-router.post("/login", async (req, res) => { 
+router.post("/login", async (req, res, next) => { 
   const { error } = userLoginSchema.validate(req.body)
+  const { email, password } = req.body;
   if (error) {
     return res.status(400).json({
       status: "Bad Request",
@@ -47,6 +52,21 @@ router.post("/login", async (req, res) => {
         message: "missing some input fields"
       }
     })
+  }
+  try {
+    await login(email, password)
+    res.status(200).json({
+      Status:  "OK",
+      ResponseBody: {
+      token: "exampletoken",
+      user: {
+      email: email,
+      subscription: "starter"
+  }
+}
+    })
+  } catch (error) {
+    next(error)
   }
 });
 router.post("/logout")

@@ -1,19 +1,16 @@
-const { Conflict} = require('http-errors')
+const createError = require('http-errors')
 const { User } = require("../db/usersModel");
 const bcrypt = require("bcrypt");
 
 const signup = async (email, password) => {
-  const user = await User.findOne({ email });
-  if (user) { 
-    throw Conflict
+  
+    const user = await User.findOne({ email });
+    if (user) {
+      throw createError(409, 'Email in use.', {status: "Conflict"})
+    }
+      const newUser = new User ({ email, password: await bcrypt.hash(password, 10) });
+      await newUser.save();
   }
-  try {
-    const newUser = new User({ email, password: await bcrypt.hash(password, 10) });
-    await newUser.save();
-  } catch (error) {
-    console.log(error);
-  }
-};
 
 const login = async (email, password) => {
   
