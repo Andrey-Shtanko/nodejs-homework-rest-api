@@ -66,7 +66,7 @@ router.post("/", auth, async (req, res, next) => {
   });
 });
 
-router.delete("/:contactId", async (req, res, next) => {
+router.delete("/:contactId",auth, async (req, res, next) => {
   const { contactId } = req.params;
   const deletedContact = await contacts.removeContact(contactId);
   if (!deletedContact) {
@@ -75,7 +75,7 @@ router.delete("/:contactId", async (req, res, next) => {
   res.status(200).json({ message: "contact deleted" });
 });
 
-router.put("/:contactId", async (req, res, next) => {
+router.put("/:contactId", auth, async (req, res, next) => {
   const { error } = contactUpdateSchema.validate(req.body);
   const { contactId } = req.params;
   const { name, email, phone } = req.body;
@@ -97,7 +97,7 @@ router.put("/:contactId", async (req, res, next) => {
     data: { updatedContact },
   });
 });
-router.patch("/:contactId/favorite", async (req, res, next) => {
+router.patch("/:contactId/favorite", auth, async (req, res, next) => {
   const { contactId } = req.params;
   const { favorite: body } = req.body;
 
