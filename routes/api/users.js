@@ -1,7 +1,7 @@
 const express = require("express");
 const Joi = require("joi");
 const { auth } = require("../../middlewares/auth");
-const { signup, login, logout, getCurrent } = require("../../models/users");
+const { signup, login, logout } = require("../../models/users");
 const router = express.Router();
 
 const userSingupSchema = Joi.object({
@@ -71,8 +71,17 @@ router.post("/login", async (req, res, next) => {
   }
 });
 router.post("/logout")
-router.get("/current", auth, (req, res, next) => { 
-  console.log(req.user);
+router.get("/current", auth, (req, res, next) => {
+  const { email, subscription } = req.user;
+  res.status(200).json({
+    status: "OK",
+    ResponseBody: {
+  email: email,
+  subscription: subscription
+}
+  })
+ 
+  
 })
 
 module.exports = router;

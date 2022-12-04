@@ -41,13 +41,10 @@ const logout = async () => {
 
 };
 
-const getCurrent = async () => { 
 
-}
 
 module.exports = {
   signup,
   login,
-  logout,
-  getCurrent
+  logout
 };
