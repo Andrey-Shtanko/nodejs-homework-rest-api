@@ -1,6 +1,7 @@
 const express = require("express");
 const contacts = require("../../models/contacts.js");
 const Joi = require("joi");
+const { auth } = require("../../middlewares/auth.js");
 
 const contactCreateSchema = Joi.object({
   name: Joi.string().required(),
@@ -40,9 +41,10 @@ router.get("/:contactId", async (req, res, next) => {
   });
 });
 
-router.post("/", async (req, res, next) => {
+router.post("/", auth, async (req, res, next) => {
   const { error } = contactCreateSchema.validate(req.body);
   const { name, email, phone, favorite = false } = req.body;
+  const { _id } = req.user;
 
   if (error) {
     return res.status(400).json({ message: "missing required name field" });
@@ -52,6 +54,7 @@ router.post("/", async (req, res, next) => {
     email,
     phone,
     favorite,
+    owner: _id
   };
   const newContact = await contacts.addContact(body);
   res.status(201).json({

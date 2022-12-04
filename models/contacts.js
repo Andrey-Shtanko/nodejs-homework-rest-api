@@ -30,9 +30,9 @@ const removeContact = async (contactId) => {
   }
 };
 
-const addContact = async ({ name, email, phone }) => {
+const addContact = async ({ name, email, phone, owner, favorite }) => {
   try {
-    const newContact = new Contact({ name, email, phone });
+    const newContact = new Contact({ name, email, phone, owner, favorite });
     await newContact.save();
     return newContact;
   } catch (error) {
