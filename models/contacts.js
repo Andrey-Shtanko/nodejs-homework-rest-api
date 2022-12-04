@@ -1,8 +1,11 @@
 const { Contact } = require("../db/contactModel");
 
-const listContacts = async (id) => {
+const listContacts = async (id, skip, limit) => {
   try {
-    const contacts = await Contact.find({owner: id}).populate("owner");
+    const contacts = await Contact.find({ owner: id }, "", {
+      skip,
+      limit
+    }).populate("owner");
     return contacts;
   } catch (error) {
     console.log(error);

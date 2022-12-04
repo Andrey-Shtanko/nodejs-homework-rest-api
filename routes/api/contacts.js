@@ -17,8 +17,11 @@ const contactUpdateSchema = Joi.object({
 const router = express.Router();
 
 router.get("/", auth, async (req, res, next) => {
+  const { page = 1, limit = 5 } = req.query;
+  const skip = (Number(page) - 1) * Number(limit);
   const { _id } = req.user;
-  const contactList = await contacts.listContacts(_id);
+  const limitToNumber = Number(limit);
+  const contactList = await contacts.listContacts(_id, skip, limitToNumber );
   res.json({
     status: "success",
     code: 200,
