@@ -68,7 +68,13 @@ router.post("/login", async (req, res, next) => {
     next(error)
   }
 });
-router.post("/logout", auth, (req, res, next) => { 
+router.post("/logout", auth, async (req, res, next) => {
+  const { _id} = req.user
+  try {
+    await logout(_id)
+  } catch (error) {
+    next(error)
+  }
 
 })
 
