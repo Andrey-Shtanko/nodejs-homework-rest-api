@@ -1,17 +1,18 @@
 const { Contact } = require("../db/contactModel");
 
-const listContacts = async () => {
+const listContacts = async (id) => {
   try {
-    const contacts = await Contact.find({});
+    const contacts = await Contact.find({owner: id}).populate("owner");
     return contacts;
   } catch (error) {
     console.log(error);
   }
 };
 
-const getContactById = async (contactId) => {
+const getContactById = async (contactId, id) => {
   try {
-    const findedContact = Contact.findById(contactId);
+    const contacts = await Contact.find({owner: id})
+    const findedContact = contacts.filter(contact => contact._id === contactId)
     if (!findedContact) {
       return null;
     }

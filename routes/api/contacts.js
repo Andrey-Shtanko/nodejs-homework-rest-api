@@ -16,8 +16,9 @@ const contactUpdateSchema = Joi.object({
 
 const router = express.Router();
 
-router.get("/", async (req, res, next) => {
-  const contactList = await contacts.listContacts();
+router.get("/", auth, async (req, res, next) => {
+  const { _id } = req.user;
+  const contactList = await contacts.listContacts(_id);
   res.json({
     status: "success",
     code: 200,
@@ -27,9 +28,10 @@ router.get("/", async (req, res, next) => {
   });
 });
 
-router.get("/:contactId", async (req, res, next) => {
+router.get("/:contactId", auth, async (req, res, next) => {
   const { contactId } = req.params;
-  const contact = await contacts.getContactById(contactId);
+  const { _id } = req.user;
+  const contact = await contacts.getContactById(contactId, _id);
   if (!contact) {
     return res.status(404).json({ message: "Not found" });
   }
