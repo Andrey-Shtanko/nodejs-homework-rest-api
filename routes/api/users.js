@@ -70,9 +70,13 @@ router.post("/login", async (req, res, next) => {
     next(error)
   }
 });
-router.post("/logout")
+router.post("/logout", auth, (req, res, next) => { 
+
+})
+
 router.get("/current", auth, (req, res, next) => {
-  const { email, subscription } = req.user;
+  try {
+    const { email, subscription } = req.user;
   res.status(200).json({
     status: "OK",
     ResponseBody: {
@@ -80,8 +84,9 @@ router.get("/current", auth, (req, res, next) => {
   subscription: subscription
 }
   })
- 
-  
+  } catch (error) {
+    next(error)
+  }  
 })
 
 module.exports = router;
