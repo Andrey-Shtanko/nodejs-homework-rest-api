@@ -5,7 +5,7 @@ const listContacts = async (id, skip, limit) => {
     const contacts = await Contact.find({ owner: id }, "", {
       skip,
       limit
-    }).populate("owner");
+    });
     return contacts;
   } catch (error) {
     console.log(error);

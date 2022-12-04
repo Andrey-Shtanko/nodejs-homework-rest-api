@@ -68,10 +68,13 @@ router.post("/login", async (req, res, next) => {
     next(error)
   }
 });
-router.post("/logout", auth, async (req, res, next) => {
+router.get("/logout", auth, async (req, res, next) => {
   const { _id} = req.user
   try {
     await logout(_id)
+    res.status(204).json({
+      ResponseBody: {message: "No Content"}
+    })
   } catch (error) {
     next(error)
   }

@@ -37,7 +37,12 @@ const login = async (email, password) => {
 
 };
 
-const logout = async () => {
+const logout = async (id) => {
+  const user = await User.findById(id);
+  if (!user) {
+    throw createError(401, "Not authorized", {status: "Unauthorized"})
+  }
+  await User.findByIdAndUpdate(id, { token: null });
 
 };
 
