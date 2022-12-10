@@ -1,6 +1,8 @@
 const express = require("express");
 const logger = require("morgan");
 const cors = require("cors");
+// const multer = require("multer");
+// const path = require("path");
 
 
 const contactsRouter = require("./routes/api/contacts");
@@ -12,6 +14,23 @@ const formatsLogger = app.get("env") === "development" ? "dev" : "short";
 app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
+
+// const tmpDir = path.join(__dirname, "tmp")
+
+// const multerConfig = multer.diskStorage({
+//   destination: (req, file, cb) => { 
+//     cb(null, tmpDir)
+//   },
+//   filename: (req, file, cb) => { 
+//     cb(null, file.originalname);
+//   },
+//   limits: {
+//     fileSize: 4096
+//   }
+// });
+// const upload = multer({
+//   storage: multerConfig,
+// })
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", usersRouter);

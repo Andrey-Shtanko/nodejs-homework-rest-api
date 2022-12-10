@@ -1,6 +1,7 @@
 const express = require("express");
 const Joi = require("joi");
 const { auth } = require("../../middlewares/auth");
+const { upload} = require("../../middlewares/upload")
 const { signup, login, logout } = require("../../models/users");
 const router = express.Router();
 
@@ -96,8 +97,8 @@ router.get("/current", auth, (req, res, next) => {
   }  
 })
 
-router.patch("/avatars", auth, (req, res, next) => { 
-  
+router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
+
 })
 
 module.exports = router;
