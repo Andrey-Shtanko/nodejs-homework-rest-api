@@ -96,4 +96,8 @@ router.get("/current", auth, (req, res, next) => {
   }  
 })
 
+router.patch("/avatars", auth, (req, res, next) => { 
+  
+})
+
 module.exports = router;

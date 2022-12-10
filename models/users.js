@@ -2,6 +2,8 @@ const createError = require('http-errors')
 const { User } = require("../db/usersModel");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
+const gravatar = require('gravatar')
+
 require("dotenv").config();
 const secret = process.env.SECRET_KEY;
 
@@ -10,8 +12,9 @@ const signup = async (email, password) => {
     const user = await User.findOne({ email });
     if (user) {
       throw createError(409, "Email in use", {status: "Conflict"})
-    }
-      const newUser = new User ({ email, password: await bcrypt.hash(password, 10) });
+  }
+  const avatarURL = gravatar.url(email);
+      const newUser = new User ({ email, password: await bcrypt.hash(password, 10), avatarURL });
       await newUser.save();
   }
 
