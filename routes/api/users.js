@@ -105,6 +105,12 @@ router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) =
   const resultAvatarPath = path.join(avatarDir, req.file.originalname, _id);
   fs.rename(req.file.path, resultAvatarPath)
   try {
+        fs.rename(req.file.path, resultAvatarPath)
+      } catch (error) {
+        await fs.unlink(req.file.path)
+      }
+
+  try {
     await updateAvatar(_id, resultAvatarPath)
     res.status(200).json({
       Status: "OK",
