@@ -1,8 +1,10 @@
 const express = require("express");
 const Joi = require("joi");
 const { auth } = require("../../middlewares/auth");
-const { upload} = require("../../middlewares/upload")
-const { signup, login, logout } = require("../../models/users");
+const { upload } = require("../../middlewares/upload")
+const { signup, login, logout, updateAvatar } = require("../../models/users");
+const fs = require("fs/promises")
+const path = require("path")
 const router = express.Router();
 
 const userSingupSchema = Joi.object({
@@ -98,7 +100,21 @@ router.get("/current", auth, (req, res, next) => {
 })
 
 router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
-
+  const { _id } = req.user
+  const avatarDir = path.normalize('../../public/avatars');
+  const resultAvatarPath = path.join(avatarDir, req.file.originalname, _id);
+  fs.rename(req.file.path, resultAvatarPath)
+  try {
+    await updateAvatar(_id, resultAvatarPath)
+    res.status(200).json({
+      Status: "OK",
+      ResponseBody: {
+        avatarUrl: resultAvatarPath,
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
 })
 
 module.exports = router;

@@ -49,10 +49,19 @@ const logout = async (id) => {
 
 };
 
+const updateAvatar = async (id, avatarPath) => { 
+  const user = await User.findById(id);
+  if (!user) { 
+    throw createError(401, "Not authorized", {status: "Unauthorized"})
+  }
+  await User.findByIdAndUpdate(id, {avatarURL: avatarPath})
+}
+
 
 
 module.exports = {
   signup,
   login,
-  logout
+  logout,
+  updateAvatar
 };
