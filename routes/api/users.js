@@ -99,28 +99,27 @@ router.get("/current", auth, (req, res, next) => {
   }  
 })
 
-// router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
-//   const { _id } = req.user
-//   const avatarDir = path.normalize('../../public/avatars');
-//   const resultAvatarPath = path.join(avatarDir, req.file.originalname, _id);
-//   fs.rename(req.file.path, resultAvatarPath)
-//   try {
-//         fs.rename(req.file.path, resultAvatarPath)
-//       } catch (error) {
-//         await fs.unlink(req.file.path)
-//       }
+router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
+  const { email, _id } = req.user;
+  const avatarDir = path.join(__dirname, "../../", "public/avatars");
+  const resultAvatarPath = `${path.join(avatarDir, req.file.originalname)}${email}.jpg`;
+  try {
+        fs.rename(req.file.path, resultAvatarPath)
+      } catch (error) {
+        await fs.unlink(req.file.path)
+      }
 
-//   try {
-//     await updateAvatar(_id, resultAvatarPath)
-//     res.status(200).json({
-//       Status: "OK",
-//       ResponseBody: {
-//         avatarUrl: resultAvatarPath,
-//       }
-//     })
-//   } catch (error) {
-//     next(error)
-//   }
-// })
+  try {
+    await updateAvatar(_id, resultAvatarPath)
+    res.status(200).json({
+      Status: "OK",
+      ResponseBody: {
+        avatarUrl: resultAvatarPath,
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+})
 
 module.exports = router;
