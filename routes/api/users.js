@@ -5,6 +5,7 @@ const { upload } = require("../../middlewares/upload")
 const { signup, login, logout, updateAvatar } = require("../../models/users");
 const fs = require("fs/promises")
 const path = require("path")
+const jimp = require("jimp")
 const router = express.Router();
 
 const userSingupSchema = Joi.object({
@@ -103,6 +104,8 @@ router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) =
   const { email, _id } = req.user;
   const avatarDir = path.join(__dirname, "../../", "public/avatars");
   const resultAvatarPath = `${path.join(avatarDir, req.file.originalname)}${email}.jpg`;
+  const avatar = await jimp.read(req.file.path);
+  await avatar.autocrop().cover(250, 250, jimp.HORIZONTAL_ALIGN_CENTER || jimp.VERTICAL_ALIGN_MIDDLE).writeAsync(req.file.path);
   try {
         fs.rename(req.file.path, resultAvatarPath)
       } catch (error) {
