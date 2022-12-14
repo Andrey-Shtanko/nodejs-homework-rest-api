@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar')
 const sgMail = require('@sendgrid/mail')
+const { v4: uuidv4 } = require('uuid');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 
@@ -16,16 +17,18 @@ const signup = async (email, password) => {
     if (user) {
       throw createError(409, "Email in use", {status: "Conflict"})
   }
+  
+  const avatarURL = gravatar.url(email);
+  const newVerifyToken = uuidv4();
+      const newUser = new User ({ email, password: await bcrypt.hash(password, 10), avatarURL, verificationToken: newVerifyToken});
+  await newUser.save();
   const msg = {
   to: email, 
   from: 'shtankoandrew90@gmail.com',
   subject: 'Thanks for your registration',
   text: 'Thanks for your registration',
-  html: '<strong>Thanks for your registration in our APP</strong>',
+  html: `<strong>Thanks for your registration in our APP. For verify your account go to <a href="localhost:3000/api/users/verify/:${newVerifyToken}">Confirm your email</a></strong>`,
 }
-  const avatarURL = gravatar.url(email);
-      const newUser = new User ({ email, password: await bcrypt.hash(password, 10), avatarURL });
-  await newUser.save();
   await sgMail.send(msg);
   }
 
