@@ -30,7 +30,7 @@ const signup = async (email, password) => {
   }
 
 const login = async (email, password) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, verify: true });
   if (!user) {
     throw createError(401, "Email or password is wrong", {status: "Unauthorized"})
   }
@@ -68,11 +68,20 @@ const updateAvatar = async (id, avatarPath) => {
   await User.findByIdAndUpdate(id, {avatarURL: avatarPath})
 }
 
+const verify = async (verificationToken) => {
+  const isVerify = await User.findOne(verificationToken);
+  if (!isVerify) {
+    throw createError(404, "User not found", {status: "Not found"})
+  }
+  await User.updateOne({ verificationToken }, {verificationToken: null, verify: true})
+}
+
 
 
 module.exports = {
   signup,
   login,
   logout,
-  updateAvatar
+  updateAvatar,
+  verify
 };

@@ -2,7 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const { auth } = require("../../middlewares/auth");
 const { upload } = require("../../middlewares/upload")
-const { signup, login, logout, updateAvatar } = require("../../models/users");
+const { signup, login, logout, updateAvatar, verify } = require("../../models/users");
 const fs = require("fs/promises")
 const path = require("path")
 const jimp = require("jimp")
@@ -100,8 +100,19 @@ router.get("/current", auth, (req, res, next) => {
   }  
 })
 
-router.get("/verify/:verificationToken", (req, res, next) => {
-  
+router.get("/verify/:verificationToken", async (req, res, next) => {
+  const { verificationToken } = req.body
+  try {
+    await verify(verificationToken);
+    res.status(200).json({
+      status: "OK",
+      ResponseBody: {
+        message: 'Verification successful'
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
  } )
 
 router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
