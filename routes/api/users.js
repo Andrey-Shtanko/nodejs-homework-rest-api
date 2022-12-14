@@ -101,7 +101,7 @@ router.get("/current", auth, (req, res, next) => {
 })
 
 router.get("/verify/:verificationToken", async (req, res, next) => {
-  const { verificationToken } = req.body
+  const { verificationToken } = req.params
   try {
     await verify(verificationToken);
     res.status(200).json({
