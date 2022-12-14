@@ -2,7 +2,7 @@ const express = require("express");
 const Joi = require("joi");
 const { auth } = require("../../middlewares/auth");
 const { upload } = require("../../middlewares/upload")
-const { signup, login, logout, updateAvatar, verify } = require("../../models/users");
+const { signup, login, logout, updateAvatar, verify, reVerification } = require("../../models/users");
 const fs = require("fs/promises")
 const path = require("path")
 const jimp = require("jimp")
@@ -12,6 +12,9 @@ const userSingupSchema = Joi.object({
   email: Joi.string().required(),
   password: Joi.string().required(),
 });
+const verifySchema = Joi.object({
+  email: Joi.string().required(),
+})
 
 const userLoginSchema = Joi.object({
   email: Joi.string().required(),
@@ -113,7 +116,33 @@ router.get("/verify/:verificationToken", async (req, res, next) => {
   } catch (error) {
     next(error)
   }
- } )
+})
+ 
+router.post("/verify", async (req, res, next) => { 
+   const { error} = verifySchema.validate(req.body)
+  const { email } = req.body;
+  if (error) {
+    return res.status(400).json({
+      status: "Bad Request",
+      ResponseBody: {
+        message: "missing required field email"
+      }
+    });
+  }
+  try {
+    await reVerification(email)
+    res.status(200).json({
+      status: "OK",
+      ResponseBody: {
+        message: 'Verification email sent'
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+  
+
+})
 
 router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
   const { email, _id } = req.user;

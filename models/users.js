@@ -79,6 +79,20 @@ const verify = async (verificationToken) => {
   await User.updateOne({ verificationToken }, {verificationToken: null, verify: true})
 }
 
+const reVerification = async (email) => { 
+  const user = User.findOne({ email, verify: false });
+  if (!user) {
+    throw createError(400, "Verification has already been passed", {status: "Bad Request"})
+  }
+  const msg = {
+  to: email, 
+  from: 'shtankoandrew90@gmail.com',
+  subject: 'Thanks for your registration',
+  text: `Thanks for your registration in our APP. For verify your account go to http://localhost:3000/api/users/verify/${user.verificationToken}`,
+  html: `<strong>Thanks for your registration in our APP. For verify your account go to <a href="http://localhost:3000/api/users/verify/${user.verificationToken}">Confirm your email</a></strong>`,
+}
+  await sgMail.send(msg);
+}
 
 
 module.exports = {
@@ -86,5 +100,6 @@ module.exports = {
   login,
   logout,
   updateAvatar,
-  verify
+  verify,
+  reVerification
 };
