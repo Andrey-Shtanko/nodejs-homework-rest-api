@@ -26,8 +26,8 @@ const signup = async (email, password) => {
   to: email, 
   from: 'shtankoandrew90@gmail.com',
   subject: 'Thanks for your registration',
-  text: 'Thanks for your registration',
-  html: `<strong>Thanks for your registration in our APP. For verify your account go to <a href="localhost:3000/api/users/verify/:${newVerifyToken}">Confirm your email</a></strong>`,
+  text: `Thanks for your registration in our APP. For verify your account go to http://localhost:3000/api/users/verify/${newVerifyToken}`,
+  html: `<strong>Thanks for your registration in our APP. For verify your account go to <a href="http://localhost:3000/api/users/verify/${newVerifyToken}">Confirm your email</a></strong>`,
 }
   await sgMail.send(msg);
   }
