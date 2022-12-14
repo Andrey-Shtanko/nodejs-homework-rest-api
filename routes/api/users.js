@@ -100,6 +100,10 @@ router.get("/current", auth, (req, res, next) => {
   }  
 })
 
+router.get("/verify/:verificationToken", (req, res, next) => {
+  
+ } )
+
 router.patch("/avatars", auth, upload.single("avatar"), async (req, res, next) => { 
   const { email, _id } = req.user;
   const avatarDir = path.join(__dirname, "../../", "public/avatars");
